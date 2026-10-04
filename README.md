@@ -1,4 +1,12 @@
-# ðŸ—Ÿï¸ SOC & Blue Team Lab: WireGuard VPN, Elastic SIEM & DeteccÃ£o de Brute-Force SSH
+k#!/bin/bash
+set -e
+
+echo "[*] Entrando na pasta do projeto..."
+cd ~/soc-lab-elastic-kali
+
+echo "[*] Escrevendo README.md completo..."
+cat > README.md << 'README_CONTENT'
+# ðŸ›¡ï¸ Enterprise SOC & Threat Simulation Laboratory
 
 LaboratÃ³rio prÃ¡tico de SeguranÃ§a Defensiva (Blue Team / SOC NÃ­vel 1) projetado para simular uma infraestrutura corporativa segmentada, canal de acesso seguro via VPN criptografada e monitoramento de eventos de autenticaÃ§Ã£o atravÃ©s do Elastic Stack 8.x.
 
@@ -6,7 +14,7 @@ LaboratÃ³rio prÃ¡tico de SeguranÃ§a Defensiva (Blue Team / SOC NÃ­vel 1) projeta
 
 ## ðŸ“ Topologia de Rede do LaboratÃ³rio
 
-`text
+```text
        [ Atacante / Analista SOC ]
              Kali Linux
          eth1: 198.51.100.2/24
@@ -20,4 +28,83 @@ LaboratÃ³rio prÃ¡tico de SeguranÃ§a Defensiva (Blue Team / SOC NÃ­vel 1) projeta
          [ Debian Servidor / SIEM ]
            enp0s3: 192.168.50.10/24 (LAN)
            
-  â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™â™à¤(€€€Sé¹•°É¥ÁÑ½É…™…‘¼]¥É•Õ…É€¡ÝœÀè€ÄÀ¸ØØ¸À¸À¼ÈÐ¤(€€€-…±¤€ ÄÀ¸ØØ¸À¸È¤ƒŠRŠRm¹…ÁÍÕ±…‘½wŠZDM•ÉÙ¥‘½È€ ÄÀ¸ØØ¸À¸Ä¤(€ƒŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠfcŠf`)€ (´´´((ŒŒƒÂ~n—¾â<Q•¹½±½¥…Ì”•ÉÉ…µ•¹Ñ…ÌµÁÉ•…‘…Ì((¨€¨©Y¥ÉÑÕ…±¥é‡Ÿ¼è¨Y¥ÉÑÕ…±	½à€Ü¹à€¡I•‘•Ì%¹Ñ•É¹…Ì”!½ÍÐµ=¹±ä¤(¨€¨©¥É•Ý…±°€¼I½Ñ•…µ•¹Ñ¼è¨•‰¥…¸9T½1¥¹Õà½´¹™Ñ…‰±•Í€€¡A½³µÑ¥…ÌÉ•ÍÑÉ¥Ñ¥Ù…Ì‘”I=@”•¹…µ¥¹¡…µ•¹Ñ¼¤(¨€¨©Sé¹•°YA8è¨]¥É•Õ…É€¡É¥ÁÑ½É…™¥„‘”¡…Ù”Ãé‰±¥„ÕÉÙ”ÈÔÔÄä¤(¨€¨©M%4€˜Q•±•µ•ÑÉ¥„è¨±…ÍÑ¥Í•…É €à¹à°-¥‰…¹„”¥±•‰•…Ð€¡7Í‘Õ±¼MåÍÑ•´€¼…ÕÑ ¹±½œ¤(¨€¨©M¥µÕ±‡Ÿ¼‘”µ•‡„è¨(-…±¤1¥¹Õà½´Q!µ!å‘É„((´´´((ŒŒƒÂ~JàÙ¥“©¹¥…ÌS¥¹¥…Ì‘”%µÁ±•µ•¹Ñ‡Ÿ¼((ŒŒŒ€Ä¸½¹™¥ÕÉ‡Ÿ¼‘”%¹Ñ•É™…•Ì‘”I•‘”)½¹™¥ÕÉ‡Ÿ¼‘„¥¹Ñ•É™…”]8›¾ÂÅÍ¥„”…Ñ¥Ù‡Ÿ¼‘„¥¹Ñ•É™…”ÝœÁ€•¹…ÁÍÕ±…‘„¸(…mQ½Á½±½¥„‘”%¹Ñ•É™…•Ít¡‘½Ì½¥µ…•Ì¼ÀÅ}Ñ½Á½±½¥…}¥¹Ñ•É™…•Ì¹Á¹œ¤((ŒŒŒ€È¸Sé¹•°É¥ÁÑ½É…™…‘¼]¥É•Õ…É)Y…±¥‘‡Ÿ¼‘”¡…¹‘Í¡…­”…Ñ¥Ù¼°Á•ÉÍ¥ÍÓ©¹¥„‘”½¹•ã¼€ ©­••Á…±¥Ù”¨¤”ÑË…™•¼‘”‘…‘½Ì‰¥‘¥É•¥½¹…°¸(…m!…¹‘Í¡…­”]¥É•Õ…É‘t¡‘½Ì½¥µ…•Ì¼ÀÉ}Ý¥É•Õ…É‘}¡…¹‘Í¡…­”¹Á¹œ¤((ŒŒŒ€Ì¸%¹•ÍÓ¼‘”Q•±•µ•ÑÉ¥„¹¼±…ÍÑ¥ŒM%4€¡-¥‰…¹„¤)A…¥¹•°‘¼¥Í½Ù•È•á¥‰¥¹‘¼½Ì•Ù•¹Ñ½Ì¥¹‘•á…‘½ÌÁ•±¼…•¹Ñ”¥±•‰•…Ð…ÑÉ…Û¥Ì‘¼…¹…°Í•ÕÉ¼¸(…m-¥‰…¹„¥Í½Ù•Ét¡‘½Ì½¥µ…•Ì¼ÀÍ}­¥‰…¹…}‘¥Í½Ù•É}•É…°¹Á¹œ¤((ŒŒŒ€Ð¸M¥µÕ±‡Ÿ¼‘”Ñ…ÅÕ”‘”½Ë„	ÉÕÑ„€¡MM ¤)á•×Ÿ¼‘”…Ñ…ÅÕ”‘”‘¥¥½»…É¥¼½´!å‘É„½¹ÑÉ„¼Í•ÉÙ§¼MM •áÁ½ÍÑ¼¹¼Óé¹•°€¡€ÄÀ¸ØØ¸À¸ÄèÈÉ€¤¸(…mM¥µÕ±‡Ÿ¼!å‘É…t¡‘½Ì½¥µ…•Ì¼ÀÑ}¡å‘É…}…ÑÑ…­}Í¥µÕ±…Ñ¥½¸¹Á¹œ¤((ŒŒŒ€Ô¸»…±¥Í”É…¹Õ±…È‘”1½Ì‘”ÕÑ•¹Ñ¥‡Ÿ¼)I•¥ÍÑ½Ì‘”•Ù•¹Ñ½Ì‘•Ñ…±¡…‘½Ì…ÁÑÕÉ…‘½Ì¹¼±ÕÍÑ•È‘¼±…ÍÑ¥Í•…É ¸(…mQ…‰•±„‘”1½Ít¡‘½Ì½¥µ…•Ì¼ÀÕ}•±…ÍÑ¥}±½Í}Ñ…‰•±„¹Á¹œ¤((´´´((ŒŒƒÂ~:¼I•É„‘”•Ñ•Ÿ¼-E0Á±¥…‘„¹¼M%4()­Å°)•Ù•¹Ð¹…Ñ•½Éäè€‰…ÕÑ¡•¹Ñ¥…Ñ¥½¸ˆ…¹•Ù•¹Ð¹½ÕÑ½µ”è€‰™…¥±ÕÉ”ˆ…¹Í•ÉÙ¥”¹ÑåÁ”è€‰ÍÍ ˆ)€((¨€¨©Q¥Á¼‘”I•É„è¨)Q¡É•Í¡½±€¡1¥µ¥Ñ”‘”Ñ•¹Ñ…Ñ¥Ù…Ì¤(¨€¨©É¥Ó¥É¥¼‘”¥ÍÁ…É¼è¨(5…¥Ì‘”€Ô™…±¡…Ì½¹Í•ÕÑ¥Ù…Ì¹¼¥¹Ñ•ÉÙ…±¼‘”€Äµ¥¹ÕÑ¼…ÉÕÁ…‘…ÌÁ•±¼…µÁ¼Í½ÕÉ”¹¥Á€¸(¨€¨©M•Ù•É¥‘…‘”è¨±Ñ„€ ©!¥ ¨¤ð€¨©I¥Í¬M½É”è¨(€ÜÌ(
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    TÃºnel Criptografado WireGuard (wg0: 10.66.0.0/24)
+    Kali (10.66.0.2) â”€â”€[Encapsulado]â”€â”€> Servidor (10.66.0.1)
+  â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+```
+
+---
+
+## ðŸ› ï¸ Tecnologias e Ferramentas Empregadas
+
+* **Virtualizacao:** VirtualBox 7.x (Redes Internas e Host-Only)
+* **Firewall / Roteamento:** Debian GNU/Linux com nftables (PolÃ­ticas restritivas de DROP e encaminhamento)
+* **TÃºnel VPN:** WireGuard (Criptografia de chave pÃºblica Curve25519)
+* **SIEM & Telemetria:** Elasticsearch 8.x, Kibana e Filebeat (MÃ³dulo System / auth.log)
+* **Simulacao de AmeaÃ§a:** Kali Linux com THC-Hydra
+
+---
+
+## ðŸ“¸ EvidÃªncias TÃ©cnicas de ImplementaÃ§Ã£o
+
+### 1. ConfiguraÃ§Ã£o de Interfaces de Rede
+ConfiguraÃ§Ã£o da interface WAN fÃ­sica e ativaÃ§Ã£o da interface wg0 encapsulada.
+![Topologia de Interfaces](docs/images/01_topologia_interfaces.png)
+
+### 2. TÃºnel Criptografado WireGuard
+ValidaÃ§Ã£o de handshake ativo, persistÃªncia de conexÃ£o (keepalive) e trÃ¡fego de dados bidirecional.
+![Handshake WireGuard](docs/images/02_wireguard_handshake.png)
+
+### 3. IngestÃ£o de Telemetria no Elastic SIEM (Kibana)
+Painel do Discover exibindo os eventos indexados pelo agente Filebeat atravÃ©s do canal seguro.
+![Kibana Discover](docs/images/03_kibana_discover_geral.png)
+
+### 4. SimulaÃ§Ã£o de Ataque de ForÃ§a Bruta (SSH)
+ExecuÃ§Ã£o de ataque de dicionÃ¡rio com Hydra contra o serviÃ§o SSH exposto no tÃºnel (`10.66.0.1:22`).
+![SimulaÃ§Ã£o Hydra](docs/images/04_hydra_attack_simulation.png)
+
+### 5. AnÃ¡lise Granular de Logs de AutenticaÃ§Ã£o
+Registros de eventos detalhados capturados no cluster do Elasticsearch.
+![Tabela de Logs](docs/images/05_elastic_logs_tabela.png)
+
+---
+
+## ðŸŽ¯ Regra de DetecÃ§Ã£o KQL Aplicada no SIEM
+
+```kql
+event.category: "authentication" and event.outcome: "failure" and service.type: "ssh"
+```
+
+* **Tipo de Regra:** Threshold (Limite de tentativas)
+* **CritÃ©rio de Disparo:** Mais de 5 falhas consecutivas no intervalo de 1 minuto agrupadas pelo campo `source.ip`.
+* **Severidade:** Alta (High) | **Risk Score:** 73
+README_CONTENT
+
+echo "[*] Criando .gitignore de seguranca..."
+cat > .gitignore << 'GITIGNORE_CONTENT'
+*.tmp
+*.log
+passwords.txt
+/tmp/
+privatekey*
+client_priv
+server_priv
+GITIGNORE_CONTENT
+
+echo "[*] Indexando arquivos no Git..."
+git config --global user.name "mcmcesar"
+git config --global user.email "mciadss@gmail.com"
+git add README.md .gitignore docs/images/*.png
+
+echo "[*] Criando commit..."
+git commit -m "feat: documentacao completa e evidencias do lab SOC"
+
+echo "[*] Atualizando remote origin..."
+git remote remove origin 2>/dev/null || true
+git remote add origin https://github.com/mcmcesar/soc-lab-elastic-kali.git
+
+echo "[*] Enviando tudo para o GitHub..."
+git push -u origin main --force
+
+echo "[âœ”] ConcluÃ­do com sucesso! Acesse: https://github.com/mcmcesar/soc-lab-elastic-kali"
