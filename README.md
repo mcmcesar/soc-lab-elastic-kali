@@ -24,43 +24,50 @@ Laboratório prático de Segurança Defensiva (Blue Team / SOC Nível 1) projeta
     Túnel Criptografado WireGuard (wg0: 10.66.0.0/24)
     Kali (10.66.0.2) ──[Encapsulado]──> Servidor (10.66.0.1)
   ══════════════════════════════════════════════════════
-🛠️ Tecnologias e Ferramentas Empregadas
+```
 
-    Virtualização: VirtualBox 7.x (Redes Internas e Host-Only)
+---
 
-    Firewall / Roteamento: Debian GNU/Linux com nftables (políticas restritivas de DROP e encaminhamento)
+## 🛠️ Tecnologias e Ferramentas Empregadas
 
-    Túnel VPN: WireGuard (criptografia de chave pública Curve25519)
+- **Virtualização:** VirtualBox 7.x (redes internas e Host-Only)
+- **Firewall / Roteamento:** Debian GNU/Linux com nftables (políticas DROP e encaminhamento)
+- **Túnel VPN:** WireGuard (criptografia de chave pública Curve25519)
+- **SIEM & Telemetria:** Elasticsearch 8.x, Kibana e Filebeat (módulo System / `auth.log`)
+- **Simulação de Ameaça:** Kali Linux com THC-Hydra
 
-    SIEM & Telemetria: Elasticsearch 8.x, Kibana e Filebeat (módulo System / auth.log)
+---
 
-    Simulação de Ameaça: Kali Linux com THC-Hydra
+## 📸 Evidências Técnicas de Implementação
 
-📸 Evidências Técnicas de Implementação
-1. Configuração de Interfaces de Rede
+### 1. Configuração de Interfaces de Rede
+Configuração da interface WAN física e ativação da interface `wg0` encapsulada.
+![Topologia de Interfaces](docs/images/01_topologia_interfaces.png)
 
-Configuração da interface WAN física e ativação da interface wg0 encapsulada.
-https://docs/images/01_topologia_interfaces.png
-2. Túnel Criptografado WireGuard
+### 2. Túnel Criptografado WireGuard
+Validação de handshake ativo, persistência de conexão (keepalive) e tráfego bidirecional.
+![Handshake WireGuard](docs/images/02_wireguard_handshake.png)
 
-Validação de handshake ativo, persistência de conexão (keepalive) e tráfego de dados bidirecional.
-https://docs/images/02_wireguard_handshake.png
-3. Ingestão de Telemetria no Elastic SIEM (Kibana)
+### 3. Ingestão de Telemetria no Elastic SIEM (Kibana)
+Painel do Discover exibindo os eventos indexados pelo Filebeat através do canal seguro.
+![Kibana Discover](docs/images/03_kibana_discover_geral.png)
 
-Painel do Discover exibindo os eventos indexados pelo agente Filebeat através do canal seguro.
-https://docs/images/03_kibana_discover_geral.png
-4. Simulação de Ataque de Força Bruta (SSH)
+### 4. Simulação de Ataque de Força Bruta (SSH)
+Execução de ataque de dicionário com Hydra contra o SSH exposto no túnel (`10.66.0.1:22`).
+![Simulação Hydra](docs/images/04_hydra_attack_simulation.png)
 
-Execução de ataque de dicionário com Hydra contra o serviço SSH exposto no túnel (10.66.0.1:22).
-https://docs/images/04_hydra_attack_simulation.png
-5. Análise Granular de Logs de Autenticação
-
+### 5. Análise Granular de Logs de Autenticação
 Registros de eventos detalhados capturados no cluster do Elasticsearch.
-https://docs/images/05_elastic_logs_tabela.png
-🎯 Regra de Detecção KQL Aplicada no SIEM
+![Tabela de Logs](docs/images/05_elastic_logs_tabela.png)
+
+---
+
+## 🎯 Regra de Detecção KQL Aplicada no SIEM
+
+```kql
 event.category: "authentication" and event.outcome: "failure" and service.type: "ssh"
-Tipo de Regra: Threshold (Limite de tentativas)
+```
 
-Critério de Disparo: Mais de 5 falhas consecutivas no intervalo de 1 minuto agrupadas pelo campo source.ip.
-
-Severidade: Alta (High) | Risk Score: 73
+- **Tipo de Regra:** Threshold (limite de tentativas)
+- **Critério de Disparo:** mais de 5 falhas consecutivas em 1 minuto agrupadas por `source.ip`
+- **Severidade:** Alta (High) | **Risk Score:** 73
